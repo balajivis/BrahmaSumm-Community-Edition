@@ -1,5 +1,7 @@
-# BrahmaSumm
-![BrahmaSumm](images/logo_wide.png)
+
+<p align="center">
+  <img src="images/logo_wide.png" />
+</p>
 
 **BrahmaSumm** is an advanced document summarization and visualization tool designed to streamline document management, knowledge base creation, and chatbot enhancement. By leveraging cutting-edge chunking and clustering techniques, BrahmaSumm reduces token usage sent to Large Language Models (LLMs) by up to 99%, while maintaining the quality of content. The tool provides intuitive document processing, stunning visualizations, and efficient querying across multiple formats.
 
