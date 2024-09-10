@@ -1,0 +1,76 @@
+# macOS specific files
+.DS_Store
+
+# Environment variables and config
+.env
+envVars.txt
+.python-version
+
+# Python related files
+__pycache__/
+*.pyc
+*.noseids
+*.pytest_cache/
+**/.mypy_cache/**
+python_files/get-pip.py
+python_files/lib/**
+coverage/
+debug_coverage*/**
+debugpy*.log
+pydevd*.log
+test-results*.xml
+xunit-test-results.xml
+
+# Node.js related files
+**/node_modules/
+npm-debug.log
+yarn.lock
+
+# Visual Studio Code related files
+.vscode/
+.vscode-test/
+.vscode-smoke/
+**/.vscode-test/**
+**/.vscode-smoke/**
+**/.vscode/.ropeproject/**
+.vs/
+
+# Build output and temporary files
+out/
+log.log
+debug*.log
+tmp/**
+dist/**
+bin/
+obj/
+docs/_build/
+
+# Test files and logs
+cucumber-report.json
+port.txt
+precommit.hook
+**/testFiles/**/.cache/**
+
+# Coverage and test reports
+.nyc_output
+coverage/
+test-results*.xml
+debug_coverage*/**
+debugpy*.log
+pydevd*.log
+xunit-test-results.xml
+
+# Performance and CI results
+build/ci/performance/performance-results.json
+
+# Translation files
+*.xlf
+package.nls.*.json
+l10n/
+
+# Ignore Visual Studio Code project settings
+*.vsix
+.vs/
+
+# Exclude build directory, but keep it under version control if needed
+!build/

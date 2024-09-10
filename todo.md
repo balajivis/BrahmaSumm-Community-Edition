@@ -1,0 +1,2 @@
+- [ ] Give proper error for various things including not finding GROQ key or not finding the Ollama model
+- [ ] Setup Sphinx properly

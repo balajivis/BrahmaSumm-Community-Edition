@@ -1,0 +1,29 @@
+{
+    "Sphinx Setup Summary": {
+      "1. Ensure Correct File Paths and Filenames in index.rst": {
+        "instructions": [
+          "Verify that the .rst files you reference in the toctree directive (e.g., doc_loaders.rst, models.rst) exist under docs/source/",
+          "Ensure correct naming conventions (case sensitivity matters) and remove any inline comments that may be interfering with the references"
+        ],
+        "example": {
+          "toctree": ".. toctree::\n   :maxdepth: 2\n   :caption: Modules:\n\n   doc_loaders\n   models"
+        }
+      },
+      "2. Configure conf.py for Correct Path": {
+        "instructions": [
+          "Ensure that the sys.path in conf.py points to your source directory so Sphinx can locate and document your Python modules"
+        ]
+      },
+      "3. Rebuild Documentation": {
+        "instructions": [
+          "After making the changes, run make html to rebuild the documentation and check if the issues are resolved"
+        ]
+      },
+      "4. Common Errors to Watch For": {
+        "errors": [
+          "Missing Reference in toctree: Ensure paths are correct and files are in the right location",
+          "Failed to Import Module: Ensure sys.path is configured in conf.py to point to your Python modules"
+        ]
+      }
+    }
+  }
