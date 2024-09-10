@@ -1,10 +1,12 @@
 import logging
 import yaml
+import json
 from src.models.models import ModelManager
 from src.chunking.chunking import ChunkManager
 from src.doc_loaders.doc_loader import DocumentLoader
 from src.clustering.clustering import ClusterManager
 from src.visualize.visualize import Visualizer
+from src.outputs.report_generate import create_final_report
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -33,44 +35,80 @@ class Summarizer:
         with open('config/prompts.yaml', 'r') as file:
             return yaml.safe_load(file)
 
-    def __call__(self, source: str) -> str:
+    def __call__(self, source: str) -> dict:
         """
         Processes the input document through loading, chunking, clustering, and summarizing.
+        It returns a dictionary with all necessary data for report generation.
 
         :param source: The source document (URL or file path)
-        :return: Final summary of the document
+        :return: A dictionary containing the final summary, analysis, UMAP cluster details, and themes.
         """
+        # Step 1: Load the document
         logger.info("Loading document...")
         doc_loader = DocumentLoader(source)
         text = doc_loader()
 
+        # Step 2: Preprocess and chunk the document
         logger.info("Chunking text...")
         self.processed_text = self.chunk_manager.preprocess_text(text)
         self.chunk_manager.flexible_chunk(self.processed_text)
         chunks = self.chunk_manager.get_chunks()
 
+        # Step 3: Embed the document and run clustering
         logger.info("Embedding and clustering...")
         self.cluster_manager.embed_documents_with_progress(chunks)
         labels, cluster_centers = self.cluster_manager.cluster_document()
         logger.info(f"Number of clusters: {len(cluster_centers)}")
-        
+
+        # Step 4: Find representatives and themes for each cluster
         representatives = self.cluster_manager.find_n_closest_representatives()
         logger.info("Finding themes for each cluster...")
-
         themes, cluster_content = self.find_themes_for_clusters(chunks, representatives)
+        
+            
+        # Step 5: Generate UMAP visualization
+        logger.info("Creating the visualization...")
+        #print("Labels:", labels)
+        #print("Themes keys:", themes.keys())
+        
+        self.visualizer.plot_clusters_with_umap(
+            self.cluster_manager.vectors, 
+            themes, 
+            labels, 
+            n_neighbors=25, 
+            min_dist=0.001, 
+            spread=0.8, 
+            length=12, 
+            width=8, 
+            output_image='reports/umap_clusters.png'
+        )
 
-        # Print labels in grid format
-        self.visualizer.print_labels_in_grid(labels)
-        for cluster_label, theme in themes.items():
-            logger.info(f"Cluster {cluster_label}: Theme = {theme}")
-
+        # Step 6: Generate the final summary using LLM
         logger.info("Creating the final summary...")
         self.combined_content = " ".join(cluster_content.values())
-        self.final_summary = self.model_manager.llm_groq.invoke(
+        final_summary = self.model_manager.llm_groq.invoke(
             f"Summarize this content in a fairly detailed manner without oversimplification {self.combined_content}"
         ).content
 
-        return self.final_summary
+        # Step 7: Perform analysis on the document
+        chunk_words, total_chunks, total_words, total_tokens, tokens_sent_tokens = self.get_analysis()
+
+        # Step 8: Populate the data dictionary
+        data = {
+            'summary': final_summary,
+            'labels': labels,
+            'chunk_words': chunk_words,
+            'total_chunks': total_chunks,
+            'total_words': total_words,
+            'total_tokens': total_tokens,
+            'tokens_sent_tokens': tokens_sent_tokens,
+            'themes': themes,
+            'umap_image_path': 'reports/umap_clusters.png'
+        }
+        
+        
+
+        return data
 
     def get_analysis(self):
         """
@@ -96,7 +134,7 @@ class Summarizer:
         prompt = self.prompts['find_suitable_theme_prompt'].format(chunk_text=chunk_text)
         return self.model_manager.llm_groq.invoke(prompt).content
 
-    def find_themes_for_clusters(self, chunks, representatives):
+    def find_themes_for_clusters_slow(self, chunks, representatives):
         """
         Finds a suitable theme for each cluster and combines the chunks for each representative.
 
@@ -118,18 +156,109 @@ class Summarizer:
 
         return themes, cluster_content
       
+    def find_themes_for_clusters(self, chunks, representatives):
+        """
+        Finds suitable themes for all clusters in a single LLM call and combines the chunks for each representative.
+
+        :param chunks: The chunked text from the document
+        :param representatives: The representative chunks closest to the cluster centers
+        :return: A dictionary of themes for each cluster and combined content for each cluster
+        """
+        # Step 1: Prepare the text chunks for the LLM prompt
+        clusters_data = {}
+        cluster_content = {}
+        
+        for cluster_label, representative_indices in representatives:
+            # Get the first representative chunk to represent the cluster
+            first_representative_chunk = chunks[representative_indices[0]]
+            
+            # Prepare the data for each cluster
+            clusters_data[cluster_label] = {
+                "representative_text": first_representative_chunk,
+                "combined_text": " ".join([chunks[index] for index in representative_indices])
+            }
+
+        # Step 2: Build the LLM prompt
+        prompt = f"""
+        You are given several clusters of text, each represented by a chunk of text. Your task is to
+        extract a concise theme for each cluster, and then provide a detailed summary of all the 
+        text within each cluster. Return the result in JSON format.
+
+        Example:
+        {{
+          "Cluster 1": {{
+            "theme": "Main topic for cluster 1",
+            "summary": "Detailed summary for cluster 1 content"
+          }},
+          "Cluster 2": {{
+            "theme": "Main topic for cluster 2",
+            "summary": "Detailed summary for cluster 2 content"
+          }}
+        }}
+
+        Clusters:
+        {clusters_data}
+        Resonse must be in JSON and we will process the data in JSON in downstream code. 
+        No other data formats are accepted and don't insert any other code.
+        """
+
+        # Step 3: Call the LLM once for all clusters
+        response = self.model_manager.llm_groq.invoke(prompt).content
+        
+        print(response)
+
+        # Step 4: Process and clean the response
+        # LLM might return extra text alongside JSON, so let's clean it
+        start_idx = response.find("{")  # Find the start of the JSON
+        end_idx = response.rfind("}")  # Find the end of the JSON
+        if start_idx == -1 or end_idx == -1:
+            print("No valid JSON found in the LLM response")
+            return {}, {}
+        
+        # Extract the JSON part of the response
+        json_response = response[start_idx:end_idx+1]
+
+        # Step 5: Parse the JSON response
+        try:
+            parsed_response = json.loads(json_response)
+        except json.JSONDecodeError as e:
+            print(f"Failed to parse JSON: {e}")
+            return {}, {}
+
+
+         # Step 6: Initialize dictionaries for themes and summaries
+        themes = {}
+        cluster_content = {}
+
+        # Iterate over the parsed response and store the themes and summaries
+        for cluster_label, cluster_data in parsed_response.items():
+            theme = cluster_data.get("theme", "No theme available")
+            summary = cluster_data.get("summary", "No summary available")
+
+            themes[cluster_label] = theme
+            cluster_content[cluster_label] = summary
+
+            print(f"Cluster {cluster_label}:")
+            print(f"  Theme: {theme}")
+            print(f"  Summary: {summary}\n")
+
+        return themes, cluster_content
+      
+
 def main():
     config_path = 'config/config.yaml'
     summarizer = Summarizer(config_path)
 
-    themes = summarizer.find_suitable_theme("BrahmaSumm is an advanced document summarization and visualization tool designed to streamline document management, knowledge base creation, and chatbot enhancement. By leveraging cutting-edge chunking and clustering techniques, BrahmaSumm reduces token usage sent to Large Language Models (LLMs) by up to 99%, while maintaining the quality of content. The tool provides intuitive document processing, stunning visualizations, and efficient querying across multiple formats.")
-    print(themes)
-
-    summary = summarizer('https://www.whitehouse.gov/state-of-the-union-2024/')
-    print(summary)
+    #data = summarizer('https://mitrarobot.com')
+    #data = summarizer('https://www.whitehouse.gov/state-of-the-union-2024/')
+    data = summarizer('https://reports.shell.com/annual-report/2023/_assets/downloads/shell-annual-report-2023.pdf')
+    
+    create_final_report(data,report_path='reports/final_report.pdf')
+    
+    print(data["summary"])
 
     chunk_words, total_chunks, total_words, total_tokens, tokens_sent_tokens = summarizer.get_analysis()
-    print(f"Chunk words: {chunk_words}\n Total chunks: {total_chunks}\n Total words: {total_words}\n Total tokens in original text: {total_tokens}\n Total tokens sent to LLM: {tokens_sent_tokens}")
+    print(f"Total chunks: {total_chunks}\n Total words: {total_words}\n Total tokens in original text: {total_tokens}\n Total tokens sent to LLM: {tokens_sent_tokens}")
 
 if __name__ == "__main__":
     main()
