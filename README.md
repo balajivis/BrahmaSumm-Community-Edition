@@ -5,7 +5,7 @@
 
 **BrahmaSumm** is an advanced document summarization and visualization tool designed to streamline document management, knowledge base creation, and chatbot enhancement. By leveraging cutting-edge chunking and clustering techniques, BrahmaSumm reduces token usage sent to Large Language Models (LLMs) by up to 99%, while maintaining the quality of content. The tool provides intuitive document processing, stunning visualizations, and efficient querying across multiple formats.
 
-Look at your documents in an whole another way!
+Automatically identify themes and look at your documents in an whole another way!
 <p align="center">
   <img src="images/umap.png" />
 </p>
@@ -23,7 +23,7 @@ We can achieve dramatic cost reduction!
 - **Extract Tables, Images, and Text**: Seamlessly extract and summarize data from tables, images, and text within documents.
 - **Vectorization for querying**: Enable powerful document querying by vectorizing content for efficient search and retrieval.
 
-Understand the flow of ideas in a document very well.
+Understand the flow of ideas in a document broken into paragraphs.
 <p align="center">
   <img src="images/document_flow.png" />
 </p>
