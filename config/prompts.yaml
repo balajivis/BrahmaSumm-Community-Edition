@@ -1,0 +1,6 @@
+find_suitable_theme_prompt: |
+  Extract a key theme from this chunk from a web page: {chunk_text} that is used for topic modeling. 
+  It might contain boiler plate, elements from web and other irrelevant content and if that is so, say so. 
+  Anything related to engagement metrics with number of likes or other website parts such as Contact Us, Privacy Policy, 
+  Copyright Policy, Accessibility Statement, InstagramOpens in a new window should be called out as unrelated. 
+  Be very concise limiting to less than 5 words.

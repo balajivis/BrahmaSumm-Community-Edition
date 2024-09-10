@@ -2,7 +2,7 @@ class Visualizer:
     def __init__(self, config_path):
         pass
     
-    def print_labels_in_grid(labels):
+    def print_labels_in_grid(self,labels):
         """
         Print the cluster labels in a grid format.
         :param labels: The list of labels.

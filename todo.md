@@ -1,6 +1,10 @@
 - [ ] Move all the print statements to logger and provide a verbose option
+- [ ] Handle different loaders
+- [ ] Improve clustering with more flexible organization as well as remove outliers
+- [ ] Setup basic tests
 - [ ] Give proper error for various things including not finding GROQ key or not finding the Ollama model
 - [ ] Support other models for LLM and embeddings [Openai, Ollama, Anthropic]
+- [ ] Provide smaller summmarizer model
 - [ ] Provide a nice output option such as PDF
 - [ ] Multi-document summaries
 - [ ] Image, Video

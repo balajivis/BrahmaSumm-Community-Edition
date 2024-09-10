@@ -3,7 +3,7 @@ llm_model: "llama-3.1-70b-versatile"
 embedding_model: "mxbai-embed-large"
 
 token_limit: 1000
-target_words: 100
+target_words: 50
 chunk_flexbility: 0.25
 
 n_clusters: 10

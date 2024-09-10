@@ -18,7 +18,8 @@ We can achieve dramatic cost reduction!
 ## Features (v0.1)
 - **Multi-format support**: Summarize and visualize content from PDFs, YouTube videos, audio files, HTML, spreadsheets, and Google Drive folders.
 - **Clustering-based summarization**: BrahmaSumm intelligently chunks and clusters documents, extracting key insights while preserving quality.
-- **UMAP visualization**: View your documents in an intuitive, visual format that highlights clusters and relationships within the content.
+- **Smart Chunking**:Compared to alternate chunking methods, we built a flexible chunking that tries to keep document structures better.
+- **UMAP and other visualization**: View your documents in an intuitive, visual format that highlights clusters and relationships within the content.
 - **Token reduction**: Reduce the token count sent to LLMs by up to 99% with BrahmaSumm's efficient clustering algorithms.
 - **Extract Tables, Images, and Text**: Seamlessly extract and summarize data from tables, images, and text within documents.
 - **Vectorization for querying**: Enable powerful document querying by vectorizing content for efficient search and retrieval.
