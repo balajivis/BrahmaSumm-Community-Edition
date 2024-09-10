@@ -5,6 +5,16 @@
 
 **BrahmaSumm** is an advanced document summarization and visualization tool designed to streamline document management, knowledge base creation, and chatbot enhancement. By leveraging cutting-edge chunking and clustering techniques, BrahmaSumm reduces token usage sent to Large Language Models (LLMs) by up to 99%, while maintaining the quality of content. The tool provides intuitive document processing, stunning visualizations, and efficient querying across multiple formats.
 
+Look at your documents in an whole another way!
+<p align="center">
+  <img src="images/umap.png" />
+</p>
+
+We can achieve dramatic cost reduction!
+<p align="center">
+  <img src="images/cost.png" />
+</p>
+
 ## Features (v0.1)
 - **Multi-format support**: Summarize and visualize content from PDFs, YouTube videos, audio files, HTML, spreadsheets, and Google Drive folders.
 - **Clustering-based summarization**: BrahmaSumm intelligently chunks and clusters documents, extracting key insights while preserving quality.
@@ -12,6 +22,11 @@
 - **Token reduction**: Reduce the token count sent to LLMs by up to 99% with BrahmaSumm's efficient clustering algorithms.
 - **Extract Tables, Images, and Text**: Seamlessly extract and summarize data from tables, images, and text within documents.
 - **Vectorization for querying**: Enable powerful document querying by vectorizing content for efficient search and retrieval.
+
+Understand the flow of ideas in a document very well.
+<p align="center">
+  <img src="images/document_flow.png" />
+</p>
 
 ## Use Cases
 - **Document Management**: Organize and retrieve key information from large document sets across different formats.
