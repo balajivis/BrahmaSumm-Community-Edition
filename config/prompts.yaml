@@ -4,3 +4,27 @@ find_suitable_theme_prompt: |
   Anything related to engagement metrics with number of likes or other website parts such as Contact Us, Privacy Policy, 
   Copyright Policy, Accessibility Statement, InstagramOpens in a new window should be called out as unrelated. 
   Be very concise limiting to less than 5 words.
+
+find_suitable_theme_prompt_multiple: |
+  You are given several clusters of text, each represented by a chunk of text. Your task is to 
+  extract a concise theme for each cluster. Return the result in JSON format.
+
+  Example:
+        {{
+          "Cluster 1": {{
+            "theme": "Main topic for cluster 1",
+          }},
+          "Cluster 2": {{
+            "theme": "Main topic for cluster 2",
+          }}
+        }}
+
+  Clusters:
+    {first_representative_chunk}
+    Resonse must be in JSON and we will process the data in JSON in downstream code. 
+    No other data formats are accepted and don't insert any other code.
+        
+
+create_summary_prompt: |
+  Summarize this content in a fairly detailed manner without oversimplification {combined_content} 
+  The output must be in HTML format not in markdown. 

@@ -2,7 +2,7 @@ import logging
 import yaml
 import json
 from src.models.models import ModelManager
-from src.chunking.chunking import ChunkManager
+from src.chunking.textchunking import ChunkManager
 from src.doc_loaders.doc_loader import DocumentLoader
 from src.clustering.clustering import ClusterManager
 from src.visualize.visualize import Visualizer
@@ -63,9 +63,9 @@ class Summarizer:
         # Step 4: Find representatives and themes for each cluster
         representatives = self.cluster_manager.find_n_closest_representatives()
         logger.info("Finding themes for each cluster...")
-        themes, cluster_content = self.find_themes_for_clusters(chunks, representatives)
+        themes, cluster_content = self.find_themes_for_clusters_slow(chunks, representatives)
         
-            
+      
         # Step 5: Generate UMAP visualization
         logger.info("Creating the visualization...")
         #print("Labels:", labels)
@@ -86,10 +86,9 @@ class Summarizer:
         # Step 6: Generate the final summary using LLM
         logger.info("Creating the final summary...")
         self.combined_content = " ".join(cluster_content.values())
-        final_summary = self.model_manager.llm_groq.invoke(
-            f"Summarize this content in a fairly detailed manner without oversimplification {self.combined_content}"
-        ).content
-
+        prompt = self.prompts['create_summary_prompt'].format(combined_content=self.combined_content)
+        final_summary = self.model_manager.llm_groq.invoke(prompt).content
+      
         # Step 7: Perform analysis on the document
         chunk_words, total_chunks, total_words, total_tokens, tokens_sent_tokens = self.get_analysis()
 
@@ -154,8 +153,10 @@ class Summarizer:
             combined_chunks = " ".join([chunks[index] for index in representative_indices])
             cluster_content[cluster_label] = combined_chunks
 
+        print(themes)
         return themes, cluster_content
       
+    # TODO: Fix this -- current unused due to various issues in formatting
     def find_themes_for_clusters(self, chunks, representatives):
         """
         Finds suitable themes for all clusters in a single LLM call and combines the chunks for each representative.
@@ -167,10 +168,15 @@ class Summarizer:
         # Step 1: Prepare the text chunks for the LLM prompt
         clusters_data = {}
         cluster_content = {}
+        themes = {}
         
         for cluster_label, representative_indices in representatives:
             # Get the first representative chunk to represent the cluster
             first_representative_chunk = chunks[representative_indices[0]]
+            
+            # For theme we just need the first representative, but the full list of chunks for the cluster
+            combined_chunks = " ".join([chunks[index] for index in representative_indices])
+            cluster_content[cluster_label] = combined_chunks
             
             # Prepare the data for each cluster
             clusters_data[cluster_label] = {
@@ -179,29 +185,8 @@ class Summarizer:
             }
 
         # Step 2: Build the LLM prompt
-        prompt = f"""
-        You are given several clusters of text, each represented by a chunk of text. Your task is to
-        extract a concise theme for each cluster, and then provide a detailed summary of all the 
-        text within each cluster. Return the result in JSON format.
-
-        Example:
-        {{
-          "Cluster 1": {{
-            "theme": "Main topic for cluster 1",
-            "summary": "Detailed summary for cluster 1 content"
-          }},
-          "Cluster 2": {{
-            "theme": "Main topic for cluster 2",
-            "summary": "Detailed summary for cluster 2 content"
-          }}
-        }}
-
-        Clusters:
-        {clusters_data}
-        Resonse must be in JSON and we will process the data in JSON in downstream code. 
-        No other data formats are accepted and don't insert any other code.
-        """
-
+        prompt = self.prompts['find_suitable_theme_prompt_multiple'].format(first_representative_chunk=first_representative_chunk)
+        
         # Step 3: Call the LLM once for all clusters
         response = self.model_manager.llm_groq.invoke(prompt).content
         
@@ -210,7 +195,7 @@ class Summarizer:
         # Step 4: Process and clean the response
         # LLM might return extra text alongside JSON, so let's clean it
         start_idx = response.find("{")  # Find the start of the JSON
-        end_idx = response.rfind("}")  # Find the end of the JSON
+        end_idx = response.find("}")  # Find the end of the JSON
         if start_idx == -1 or end_idx == -1:
             print("No valid JSON found in the LLM response")
             return {}, {}
@@ -227,21 +212,13 @@ class Summarizer:
 
 
          # Step 6: Initialize dictionaries for themes and summaries
-        themes = {}
-        cluster_content = {}
-
         # Iterate over the parsed response and store the themes and summaries
         for cluster_label, cluster_data in parsed_response.items():
             theme = cluster_data.get("theme", "No theme available")
-            summary = cluster_data.get("summary", "No summary available")
-
             themes[cluster_label] = theme
-            cluster_content[cluster_label] = summary
 
-            print(f"Cluster {cluster_label}:")
-            print(f"  Theme: {theme}")
-            print(f"  Summary: {summary}\n")
-
+        
+        print(themes)
         return themes, cluster_content
       
 
@@ -249,9 +226,9 @@ def main():
     config_path = 'config/config.yaml'
     summarizer = Summarizer(config_path)
 
-    #data = summarizer('https://mitrarobot.com')
+    data = summarizer('https://mitrarobot.com')
     #data = summarizer('https://www.whitehouse.gov/state-of-the-union-2024/')
-    data = summarizer('https://reports.shell.com/annual-report/2023/_assets/downloads/shell-annual-report-2023.pdf')
+    #data = summarizer('https://reports.shell.com/annual-report/2023/_assets/downloads/shell-annual-report-2023.pdf')
     
     create_final_report(data,report_path='reports/final_report.pdf')
     

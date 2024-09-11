@@ -58,7 +58,7 @@ class Visualizer:
 
             # Get the theme for this cluster, fall back to cluster number if missing
             theme_key = f"Cluster {cluster_label}"
-            theme_label = themes.get(theme_key, f"Cluster {cluster_label}")
+            theme_label = themes.get(cluster_label, f"Cluster {cluster_label}")
 
             # Debugging: Check if the theme matches the cluster
             #print(f"Plotting cluster {cluster_label}: Theme = {theme_label}")

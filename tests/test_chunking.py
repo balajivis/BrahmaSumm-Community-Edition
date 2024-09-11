@@ -1,5 +1,5 @@
 import pytest
-from src.chunking.chunking import ChunkManager  # Adjust import based on your project structure
+from src.chunking.textchunking import ChunkManager  # Adjust import based on your project structure
 
 @pytest.fixture
 def chunk_manager():

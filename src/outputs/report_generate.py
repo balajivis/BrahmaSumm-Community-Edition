@@ -1,5 +1,4 @@
 import os
-import markdown
 from reportlab.pdfgen import canvas
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, PageBreak, Table, TableStyle
@@ -7,6 +6,37 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from PIL import Image as PILImage
 from reportlab.lib import colors
+
+def handle_li_tags(html_text, list_type="ul"):
+    """
+    Converts <li> HTML tags into ReportLab-compatible bullets or numbered lists.
+    
+    :param html_text: The HTML text containing <li> tags
+    :param list_type: 'ul' for unordered list (bullets), 'ol' for ordered list (numbers)
+    :return: Processed string with bullet points or numbering
+    """
+    if list_type == "ul":
+        # Replace <li> tags with bullet points
+        html_text = html_text.replace("<li>", '<br/>\u2022 ').replace("</li>", "")
+    elif list_type == "ol":
+        # Replace <li> tags with numbered list (this assumes items are numbered sequentially)
+        items = html_text.split("<li>")
+        for i, item in enumerate(items):
+            if "</li>" in item:
+                items[i] = f"<br/>{i}. " + item.split("</li>")[0]
+        html_text = "".join(items)
+
+    return html_text
+
+def convert_html_to_reportlab_compatible(html_text):
+    # Replace HTML tags with ReportLab-compatible tags
+    html_text = html_text.replace("<h1>", '<br /><br /><b><font size="15">').replace("</h1>", "</font></b><br />")
+    html_text = html_text.replace("<h2>", '<br /><br /><b><font size="13">').replace("</h2>", "</font></b><br />")
+    html_text = html_text.replace("<p>", "<br />").replace("</p>", "<br />")  # Handle paragraphs
+    html_text = handle_li_tags(html_text, list_type="ul")
+    html_text = html_text.replace("<ul>", "").replace("</ul>", "")
+    html_text = html_text.replace("<ol>", "").replace("</ol>", "")
+    return html_text
 
 
 def create_final_report(data: dict, report_path='reports/final_report.pdf'):
@@ -17,8 +47,8 @@ def create_final_report(data: dict, report_path='reports/final_report.pdf'):
     :param report_path: Path to save the final report PDF.
     """
     # 1. Retrieve data from the dictionary
-    summary = data.get('summary', 'No summary available').replace("\n", "<br/>")
-    summary = markdown.markdown(summary)
+    summary = convert_html_to_reportlab_compatible(data.get('summary', 'No summary available'))
+
     chunk_words = data.get('chunk_words', [])
     total_chunks = data.get('total_chunks', 0)
     total_words = data.get('total_words', 0)
@@ -83,7 +113,7 @@ def create_final_report(data: dict, report_path='reports/final_report.pdf'):
     
     # Fill table with clusters, their themes, and chunk lists
     for cluster_label, chunks in clusters.items():
-        theme = themes.get(f"Cluster {cluster_label}", f"Cluster {cluster_label}")
+        theme = themes.get(cluster_label, f"Cluster {cluster_label}")
         theme_paragraph = Paragraph(theme, styles['Normal'])
         chunk_list = ", ".join(chunks)  # Concatenate all chunks into a single string
         chunks_paragraph = Paragraph(chunk_list, styles['Normal'])
