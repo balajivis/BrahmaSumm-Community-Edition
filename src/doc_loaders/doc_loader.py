@@ -1,43 +1,21 @@
-from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader
+from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader, DirectoryLoader
 
 class DocumentLoader:
-    """
-    Load text from a source, either a PDF file or a webpage.
-
-    Parameters
-    ----------
-    source : str
-        Either a path to a PDF file or a URL to a webpage.
-
-    Attributes
-    ----------
-    source : str
-        The source from which the document is loaded.
-    text : str
-        The text content of the source.
-    """
-
-    def __init__(self, source: str):
+    def __init__(self, source: str, type: str, filter: str = None):
         """
         Initialize the DocumentLoader with a source.
 
         Parameters
         ----------
         source : str
-            The path to a PDF file or a URL to a webpage.
+            The path to a document file or a URL to a webpage.
         """
         self.source = source
+        self.type = type
+        self.glob = filter
         self.text = ""
 
     def __call__(self) -> str:
-        """
-        Call the object to load the text from the source.
-
-        Returns
-        -------
-        str
-            The loaded text content.
-        """
         self.load()
         return self.text
 
@@ -54,6 +32,8 @@ class DocumentLoader:
             self._load_pdf()
         elif self.source.lower().startswith('http'):
             self._load_webpage()
+        elif self.type == "directory":
+            self._load_directory()
         else:
             raise ValueError("Invalid source. Must be a PDF file or a URL.")
 
@@ -72,13 +52,22 @@ class DocumentLoader:
         loader = WebBaseLoader(self.source)
         docs = loader.load()
         self.text = docs[0].page_content if docs else ""
+    
+    def _load_directory(self) -> None:
+        loader = DirectoryLoader(self.source, self.glob)
+        docs = loader.load()
+        print(docs)
+
 
 
 if __name__ == "__main__":
     # Load text from a PDF file
-    pdf_loader = DocumentLoader("https://arxiv.org/pdf/2105.01697.pdf")
-    print(pdf_loader())  
+    #pdf_loader = DocumentLoader("https://arxiv.org/pdf/2105.01697.pdf","pdf")
+    #print(pdf_loader())  
 
     # Load text from a webpage
-    web_loader = DocumentLoader("https://arxiv.org/abs/2105.01697")
-    print(web_loader())
+    #web_loader = DocumentLoader("https://arxiv.org/abs/2105.01697","web")
+    #print(web_loader())
+    
+    dir_loader = DocumentLoader("/Users/balajiviswanathan/Invento/pathak","directory","**/*.xlsx")
+    print(dir_loader())

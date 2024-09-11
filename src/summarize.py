@@ -35,7 +35,7 @@ class Summarizer:
         with open('config/prompts.yaml', 'r') as file:
             return yaml.safe_load(file)
 
-    def __call__(self, source: str) -> dict:
+    def __call__(self, source: str, type: str) -> dict:
         """
         Processes the input document through loading, chunking, clustering, and summarizing.
         It returns a dictionary with all necessary data for report generation.
@@ -45,7 +45,7 @@ class Summarizer:
         """
         # Step 1: Load the document
         logger.info("Loading document...")
-        doc_loader = DocumentLoader(source)
+        doc_loader = DocumentLoader(source,type)
         text = doc_loader()
 
         # Step 2: Preprocess and chunk the document
@@ -226,9 +226,9 @@ def main():
     config_path = 'config/config.yaml'
     summarizer = Summarizer(config_path)
 
-    data = summarizer('https://mitrarobot.com')
-    #data = summarizer('https://www.whitehouse.gov/state-of-the-union-2024/')
-    #data = summarizer('https://reports.shell.com/annual-report/2023/_assets/downloads/shell-annual-report-2023.pdf')
+    data = summarizer('https://mitrarobot.com',"web")
+    #data = summarizer('https://www.whitehouse.gov/state-of-the-union-2024/',"web")
+    #data = summarizer('https://reports.shell.com/annual-report/2023/_assets/downloads/shell-annual-report-2023.pdf',"pdf")
     
     create_final_report(data,report_path='reports/final_report.pdf')
     

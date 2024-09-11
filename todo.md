@@ -2,9 +2,12 @@
 - [x] Setup basic tests
 - [x] Make a single call to the LLM to get all the themes
 - [x] Provide a nice output option such as PDF
-- [ ] Fix the bug when the target words is large
-- [ ] Image, Video
-- [ ] Youtube
+- [ ] In Config provide option to summarize as small/medium/large
+- [X] Image, Video
+- [X] Youtube
+- [ ] Handle pandas dataframe for excel and optionally explore pandas ai
+- [ ] Use unstructured document loader https://python.langchain.com/v0.2/docs/integrations/providers/unstructured/
+- [ ] explore summarization with LIDA https://microsoft.github.io/lida/
 - [ ] Table extraction
 - [ ] Provide a web page for config and control
 - [ ] Store the embedding with metadata in vector db for search
@@ -14,6 +17,7 @@
 - [ ] Support other models for LLM and embeddings [Openai, Ollama, Anthropic]
 - [ ] Provide smaller summmarizer model
 - [ ] Multi-document summaries
+- [ ] Fix the bug when the target words is large
 
 - [ ] Setup Sphinx properly
 

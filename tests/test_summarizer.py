@@ -14,7 +14,7 @@ def test_find_suitable_theme(summarizer):
 
 def test_summary(summarizer):
     # Run the summarizer and store the summary for later tests
-    summary = summarizer('https://www.whitehouse.gov/state-of-the-union-2024/')
+    summary = summarizer('https://www.whitehouse.gov/state-of-the-union-2024/',"web")
     assert isinstance(summary, str)
     assert len(summary) > 0
 

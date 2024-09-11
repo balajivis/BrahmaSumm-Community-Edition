@@ -9,3 +9,6 @@ chunk_flexbility: 0.25
 n_clusters: 10
 embed_batch_size: 20
 n_closest_representatives: 1
+
+asr_model: "whister tiny"
+asr_chunk: 30
