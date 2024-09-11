@@ -3,8 +3,8 @@
 - [x] Make a single call to the LLM to get all the themes
 - [x] Provide a nice output option such as PDF
 - [ ] In Config provide option to summarize as small/medium/large
-- [X] Image, Video
-- [X] Youtube
+- [ ] Video https://pypi.org/project/audio-extract/ 
+- [X] Youtube, audio
 - [ ] Handle pandas dataframe for excel and optionally explore pandas ai
 - [ ] Use unstructured document loader https://python.langchain.com/v0.2/docs/integrations/providers/unstructured/
 - [ ] explore summarization with LIDA https://microsoft.github.io/lida/
@@ -18,6 +18,7 @@
 - [ ] Provide smaller summmarizer model
 - [ ] Multi-document summaries
 - [ ] Fix the bug when the target words is large
+- [ ] Image (CLIP)
 
 - [ ] Setup Sphinx properly
 

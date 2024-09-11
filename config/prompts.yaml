@@ -29,4 +29,5 @@ create_summary_prompt: |
   Summarize this content in a fairly detailed manner without oversimplification {combined_content} 
   The output must be in HTML format not in markdown. Keep a simple HTML structure that can be reportlab
   pdf generator can understand. Do not return any other text. Where possible quote the author and give a
-  final analysis of the content.
+  final analysis of the content. If it is a political article, analyze the truths in teh statement too
+  with a final takeaway.

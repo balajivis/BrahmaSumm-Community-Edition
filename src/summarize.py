@@ -226,7 +226,8 @@ def main():
     config_path = 'config/config.yaml'
     summarizer = Summarizer(config_path)
 
-    data = summarizer('https://mitrarobot.com',"web")
+    #data = summarizer('https://mitrarobot.com',"web")
+    data = summarizer('https://abc7.com/read-harris-trump-presidential-debate-transcript/15289001/','web')
     #data = summarizer('https://www.whitehouse.gov/state-of-the-union-2024/',"web")
     #data = summarizer('https://reports.shell.com/annual-report/2023/_assets/downloads/shell-annual-report-2023.pdf',"pdf")
     

@@ -10,6 +10,12 @@ Automatically identify themes and look at your documents in an whole another way
   <img src="images/umap.png" />
 </p>
 
+At a fraction cost of directly sending to LLM, we can do a deep analysis of themes and other parts of the document, besides an elaborate summary. Here is a visual view of the first debate between Harris and Trump.
+
+<p align="center">
+  <img src="images/presidential_debate_themes.png" />
+</p>
+
 We can achieve dramatic cost reduction!
 <p align="center">
   <img src="images/cost.png" />
