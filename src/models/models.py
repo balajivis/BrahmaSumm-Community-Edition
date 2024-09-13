@@ -4,6 +4,8 @@ import logging
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain_community.embeddings import OllamaEmbeddings
+import openai 
+import ollama 
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -27,8 +29,9 @@ class ModelManager:
         # Initialize models as None to be lazily loaded
         self.llm_groq = None
         self.embedding_model = None
+        
 
-    def load_llm_groq(self):
+    def load_llm_groq(self,prompt):
         """
         Lazily loads the LLM Groq model based on the configuration if it hasn't been loaded yet.
         :return: The loaded LLM Groq model.
@@ -41,6 +44,7 @@ class ModelManager:
                     api_key=os.getenv("GROQ_API_KEY")
                 )
                 logger.info("Groq LLM model loaded successfully.")
+                return self.llm_groq.invoke(prompt).content
             except KeyError as e:
                 logger.error("Missing required config key for LLM: %s", e)
                 raise
@@ -48,6 +52,47 @@ class ModelManager:
                 logger.error("Error loading Groq LLM model: %s", e)
                 raise
         return self.llm_groq
+    
+    def load_llm_openai(self,prompt):
+        """
+        Loads the OpenAI model.
+        :return: The loaded OpenAI model.
+        """
+        if not self.llm:
+            try:
+                logger.info("Loading OpenAI model...")
+                openai.api_key = os.getenv("OPENAI_API_KEY")
+
+                completion = openai.ChatCompletion.create(
+                model=self.config['llm_model'],  # Make sure the model is set in config
+                messages=prompt
+            )
+                logger.info("OpenAI model loaded successfully.")
+                return completion.choices[0].message['content']
+            except KeyError as e:
+                logger.error("Missing required config key for OpenAI LLM: %s", e)
+                raise
+            except Exception as e:
+                logger.error("Error loading OpenAI LLM model: %s", e)
+                raise
+            
+    def load_llm_ollama(self,prompt):
+        """
+        Loads the Ollama LLM model.
+        :return: The loaded Ollama LLM model.
+        """
+        if not self.llm:
+            try:
+                logger.info("Loading Ollama LLM model...")
+                response = ollama.chat(model=self.config['llm_model'], messages=prompt)
+                logger.info("Ollama LLM model loaded successfully.")
+                return response['message']['content']             
+            except KeyError as e:
+                logger.error("Missing required config key for Ollama LLM: %s", e)
+                raise
+            except Exception as e:
+                logger.error("Error loading Ollama LLM model: %s", e)
+                raise
 
     def load_embedding_model(self):
         """
