@@ -19,7 +19,7 @@ class Summarizer:
         """
         self.model_manager = ModelManager(config_path)
         self.prompts = self.load_prompts()
-        self.model_manager.load_llm_groq()
+        # self.model_manager.load_llm()
         self.model_manager.load_embedding_model()
         self.chunk_manager = ChunkManager(config_path)
         self.cluster_manager = ClusterManager(self.model_manager.embedding_model, config_path)
@@ -87,7 +87,12 @@ class Summarizer:
         logger.info("Creating the final summary...")
         self.combined_content = " ".join(cluster_content.values())
         prompt = self.prompts['create_summary_prompt'].format(combined_content=self.combined_content)
-        final_summary = self.model_manager.llm_groq.invoke(prompt).content
+        if self.config['llm_provider']=='groq':
+            final_summary = self.model_manager.llm_groq(prompt)
+        elif self.config['llm_provider']=='openopenai':
+            final_summary=self.model_manager.load_llm_openai(prompt)
+        elif self.config['llm_provider']=='ollama':
+            final_summary=self.model_manager.load_llm_ollama(prompt)
       
         # Step 7: Perform analysis on the document
         chunk_words, total_chunks, total_words, total_tokens, tokens_sent_tokens = self.get_analysis()
@@ -240,5 +245,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
