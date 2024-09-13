@@ -1,12 +1,12 @@
 import logging
 import yaml
 import json
-from src.models.models import ModelManager
-from src.chunking.textchunking import ChunkManager
-from src.doc_loaders.doc_loader import DocumentLoader
-from src.clustering.clustering import ClusterManager
-from src.visualize.visualize import Visualizer
-from src.outputs.report_generate import create_final_report
+from models.models import ModelManager
+from chunking.textchunking import ChunkManager
+from doc_loaders.doc_loader import DocumentLoader
+from clustering.clustering import ClusterManager
+from visualize.visualize import Visualizer
+from outputs.report_generate import create_final_report
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -227,9 +227,9 @@ def main():
     summarizer = Summarizer(config_path)
 
     #data = summarizer('https://mitrarobot.com',"web")
-    data = summarizer('https://abc7.com/read-harris-trump-presidential-debate-transcript/15289001/','web')
+    #data = summarizer('https://abc7.com/read-harris-trump-presidential-debate-transcript/15289001/','web')
     #data = summarizer('https://www.whitehouse.gov/state-of-the-union-2024/',"web")
-    #data = summarizer('https://reports.shell.com/annual-report/2023/_assets/downloads/shell-annual-report-2023.pdf',"pdf")
+    data = summarizer('https://d18rn0p25nwr6d.cloudfront.net/CIK-0001921963/77018dae-bae9-4c33-8eaf-fa6685991719.pdf',"pdf")
     
     create_final_report(data,report_path='reports/final_report.pdf')
     
