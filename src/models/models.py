@@ -26,12 +26,28 @@ class ModelManager:
             logger.error("Failed to load configuration: %s", e)
             raise
 
-        # Initialize models as None to be lazily loaded
         self.llm_groq = None
         self.embedding_model = None
         
+        if self.config['cloud_provider'] == 'groq':
+            self.load_llm_groq()
+            
+        if self.config['cloud_provider'] == 'ollama':
+            self.load_llm_ollama()
+            
+        if self.config['cloud_provider'] == 'openai':
+            self.load_llm_openai()
+        
+        
+    def get_llm_response(self, prompt):
+        if self.config['cloud_provider'] == 'groq':
+            return self.llm_groq.invoke(prompt).content
+        if self.config['cloud_provider'] == 'ollama':
+            return self.llm_ollama(prompt)
+        if self.config['cloud_provider'] == 'openai':
+            return self.llm_openai(prompt)
 
-    def load_llm_groq(self,prompt):
+    def load_llm_groq(self):
         """
         Lazily loads the LLM Groq model based on the configuration if it hasn't been loaded yet.
         :return: The loaded LLM Groq model.
@@ -44,14 +60,12 @@ class ModelManager:
                     api_key=os.getenv("GROQ_API_KEY")
                 )
                 logger.info("Groq LLM model loaded successfully.")
-                return self.llm_groq.invoke(prompt).content
             except KeyError as e:
                 logger.error("Missing required config key for LLM: %s", e)
                 raise
             except Exception as e:
                 logger.error("Error loading Groq LLM model: %s", e)
                 raise
-        return self.llm_groq
     
     def load_llm_openai(self,prompt):
         """
@@ -135,11 +149,11 @@ class ModelManager:
 if __name__ == '__main__':
     try:
         model_manager = ModelManager('config/config.yaml')
-        model_manager.load_llm_groq()
         model_manager.load_embedding_model()
 
         print("Token count:", model_manager.count_tokens("Hello world."))
         print("Groq LLM Response:", model_manager.llm_groq.invoke("Hello world."))
         print("Embedding Result:", model_manager.embedding_model.embed_documents(["Hello world."]))
+        print("LLM content:", model_manager.get_llm_response("Hello world."))
     except Exception as e:
         logger.error("An error occurred: %s", e)

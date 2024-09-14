@@ -1,6 +1,6 @@
-cloud_provider: "ollama" #"groq"
-llm_provider: "ollama" #"groq"
-llm_model: "gemma:2b" #"llama-3.1-70b-versatile"
+cloud_provider: "groq" #"ollama"
+llm_provider: "groq" #"ollama"
+llm_model: "llama-3.1-70b-versatile" #gemma:2b"
 embedding_model: "mxbai-embed-large"
 
 token_limit: 1000

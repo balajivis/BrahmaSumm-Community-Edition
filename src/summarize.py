@@ -87,12 +87,8 @@ class Summarizer:
         logger.info("Creating the final summary...")
         self.combined_content = " ".join(cluster_content.values())
         prompt = self.prompts['create_summary_prompt'].format(combined_content=self.combined_content)
-        if self.config['llm_provider']=='groq':
-            final_summary = self.model_manager.llm_groq(prompt)
-        elif self.config['llm_provider']=='openopenai':
-            final_summary=self.model_manager.load_llm_openai(prompt)
-        elif self.config['llm_provider']=='ollama':
-            final_summary=self.model_manager.load_llm_ollama(prompt)
+        
+        final_summary = self.model_manager.get_llm_response(prompt)
       
         # Step 7: Perform analysis on the document
         chunk_words, total_chunks, total_words, total_tokens, tokens_sent_tokens = self.get_analysis()
@@ -136,7 +132,8 @@ class Summarizer:
         :return: The extracted theme for the given chunk
         """
         prompt = self.prompts['find_suitable_theme_prompt'].format(chunk_text=chunk_text)
-        return self.model_manager.llm_groq.invoke(prompt).content
+        logger.info("Finding suitable theme for chunk: %s", chunk_text)
+        return self.model_manager.get_llm_response(prompt)
 
     def find_themes_for_clusters_slow(self, chunks, representatives):
         """
@@ -152,7 +149,9 @@ class Summarizer:
         for cluster_label, representative_indices in representatives:
             first_representative_chunk = chunks[representative_indices[0]]
             theme = self.find_suitable_theme(first_representative_chunk)
+            
             themes[cluster_label] = theme  # Store the theme in the dictionary
+            logger.info("Found theme for cluster %s: %s", cluster_label, theme)
 
             # Combine chunks for this cluster
             combined_chunks = " ".join([chunks[index] for index in representative_indices])
@@ -193,7 +192,8 @@ class Summarizer:
         prompt = self.prompts['find_suitable_theme_prompt_multiple'].format(first_representative_chunk=first_representative_chunk)
         
         # Step 3: Call the LLM once for all clusters
-        response = self.model_manager.llm_groq.invoke(prompt).content
+        response = self.model_manager.get_llm_response(prompt)
+
         
         print(response)
 
@@ -230,11 +230,12 @@ class Summarizer:
 def main():
     config_path = 'config/config.yaml'
     summarizer = Summarizer(config_path)
+    print(summarizer.find_suitable_theme("Who is John Galt!"))
 
     #data = summarizer('https://mitrarobot.com',"web")
-    #data = summarizer('https://abc7.com/read-harris-trump-presidential-debate-transcript/15289001/','web')
+    data = summarizer('https://abc7.com/read-harris-trump-presidential-debate-transcript/15289001/','web')
     #data = summarizer('https://www.whitehouse.gov/state-of-the-union-2024/',"web")
-    data = summarizer('https://d18rn0p25nwr6d.cloudfront.net/CIK-0001921963/77018dae-bae9-4c33-8eaf-fa6685991719.pdf',"pdf")
+    #data = summarizer('https://d18rn0p25nwr6d.cloudfront.net/CIK-0001921963/77018dae-bae9-4c33-8eaf-fa6685991719.pdf',"pdf")
     
     create_final_report(data,report_path='reports/final_report.pdf')
     
