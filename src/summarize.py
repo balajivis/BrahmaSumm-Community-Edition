@@ -88,7 +88,7 @@ class Summarizer:
         self.combined_content = " ".join(cluster_content.values())
         prompt = self.prompts['create_summary_prompt'].format(combined_content=self.combined_content)
         
-        final_summary = self.model_manager.get_llm_response(prompt)
+        final_summary = self.model_manager.llm.invoke(prompt).content
       
         # Step 7: Perform analysis on the document
         chunk_words, total_chunks, total_words, total_tokens, tokens_sent_tokens = self.get_analysis()
@@ -133,7 +133,7 @@ class Summarizer:
         """
         prompt = self.prompts['find_suitable_theme_prompt'].format(chunk_text=chunk_text)
         logger.info("Finding suitable theme for chunk: %s", chunk_text)
-        return self.model_manager.get_llm_response(prompt)
+        return self.model_manager.llm.invoke(prompt).content
 
     def find_themes_for_clusters_slow(self, chunks, representatives):
         """
@@ -192,7 +192,7 @@ class Summarizer:
         prompt = self.prompts['find_suitable_theme_prompt_multiple'].format(first_representative_chunk=first_representative_chunk)
         
         # Step 3: Call the LLM once for all clusters
-        response = self.model_manager.get_llm_response(prompt)
+        response = self.model_manager.llm.invoke(prompt).content
 
         
         print(response)
@@ -232,9 +232,9 @@ def main():
     summarizer = Summarizer(config_path)
     print(summarizer.find_suitable_theme("Who is John Galt!"))
 
-    #data = summarizer('https://mitrarobot.com',"web")
-    data = summarizer('https://abc7.com/read-harris-trump-presidential-debate-transcript/15289001/','web')
-    #data = summarizer('https://www.whitehouse.gov/state-of-the-union-2024/',"web")
+    data = summarizer('https://medium.com/@balajivis/whats-so-challenging-about-building-chatbots-drawing-lessons-from-the-trenches-1ca7343c6e3d',"web")
+    # data = summarizer('https://abc7.com/read-harris-trump-presidential-debate-transcript/15289001/','web')
+    # data = summarizer('https://www.whitehouse.gov/state-of-the-union-2024/',"web")
     #data = summarizer('https://d18rn0p25nwr6d.cloudfront.net/CIK-0001921963/77018dae-bae9-4c33-8eaf-fa6685991719.pdf',"pdf")
     
     create_final_report(data,report_path='reports/final_report.pdf')

@@ -1,11 +1,13 @@
 # We will assume that the models are cached already
 
 import os
+import sys 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 import tempfile
 from tqdm import tqdm
 import logging
 from src.chunking.audiochunking import split_audio
-import whisper
+import fast_whisper
 from pytubefix import YouTube
 
 logging.basicConfig(level=logging.INFO)
