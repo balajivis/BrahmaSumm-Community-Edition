@@ -1,5 +1,0 @@
-GROQ_API_KEY=
-AZURE_OPENAI_API_KEY = '9a6edfa1173e48b38d40fc63abcc04d9'
-AZURE_OPENAI_ENDPOINT = 'https://jarvis-ed.openai.azure.com/openai/deployments/GPT4o/chat/completions?api-version=2024-02-15-preview'
-AZURE_OPENAI_DEPLOYMENT = 'GPT4o'
-AZURE_OPENAI_EMBED_MODEL = 'jarvis-embed'

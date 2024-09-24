@@ -4,8 +4,8 @@
 - [x] Provide a nice output option such as PDF
 - [ ] In Config provide option to summarize as small/medium/large
 - [ ] Video https://pypi.org/project/audio-extract/ 
-- [X] Youtube, audio
-- [ ] Handle pandas dataframe for excel and optionally explore pandas ai
+- [x] Youtube, audio
+- [x] Handle pandas dataframe for excel and optionally explore pandas ai
 - [ ] Use unstructured document loader https://python.langchain.com/v0.2/docs/integrations/providers/unstructured/
 - [ ] explore summarization with LIDA https://microsoft.github.io/lida/
 - [ ] Table extraction
@@ -14,7 +14,7 @@
 - [ ] Handle different loaders -- csv, arxiv
 - [ ] Improve clustering with more flexible organization as well as remove outliers
 - [ ] Give proper error for various things including not finding GROQ key or not finding the Ollama model
-- [ ] Support other models for LLM and embeddings [Openai, Ollama, Anthropic]
+- [x] Support other models for LLM and embeddings [Openai, Ollama, Anthropic]
 - [ ] Provide smaller summmarizer model
 - [ ] Multi-document summaries
 - [ ] Fix the bug when the target words is large
