@@ -1,4 +1,8 @@
 from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader, DirectoryLoader
+# from .multimedia_loader import MultimediaLoader
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class DocumentLoader:
     def __init__(self, source: str, type: str, filter: str = None):
@@ -34,8 +38,11 @@ class DocumentLoader:
             self._load_webpage()
         elif self.type == "directory":
             self._load_directory()
-        else:
-            raise ValueError("Invalid source. Must be a PDF file or a URL.")
+        # else:
+            # loader = MultimediaLoader(self.source)
+            # loader()
+        
+       
 
     def _load_pdf(self) -> None:
         """
