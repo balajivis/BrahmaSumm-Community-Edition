@@ -1,5 +1,0 @@
-set PYTHONPATH=E:\Invento Projects\BrahmaSumm
-clip
-kotaemon
-detectron
-unstructured
