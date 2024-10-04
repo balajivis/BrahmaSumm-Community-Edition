@@ -1,6 +1,6 @@
 cloud_provider: "groq" #"ollama"
-llm_provider: "ollama" #"ollama"
-llm_model: "gemma2:2b" #"llama-3.1-70b-versatile" #gemma:2b"
+llm_provider: "groq" #"ollama"
+llm_model: "llama-3.1-70b-versatile" #gemma:2b"
 embedding_model: "nomic-embed-text:latest"
 
 token_limit: 1000
