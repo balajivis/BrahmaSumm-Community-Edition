@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain_ollama import ChatOllama
-# from langchain_openai import OpenAI
+from langchain_openai import OpenAI
 from langchain_openai import AzureOpenAI
 
 # Set up logging
