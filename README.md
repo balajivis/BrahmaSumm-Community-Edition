@@ -54,8 +54,25 @@ Understand the flow of ideas in a document broken into paragraphs.
 
 ## Installation
 
-Clone the repository and install the required dependencies:
-```bash
-git clone https://github.com/your-repo/BrahmaSumm.git
-cd BrahmaSumm
-pip install -r requirements.txt
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/balajivis/BrahmaSumm-Community-Edition.git
+   cd BrahmaSumm-Community-Edition
+   ```
+
+2. **Install Dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+### Usage
+
+1. In `src/summarize.py`, add the file name and type, for example:
+   ```python
+   data = summarizer('https://medium.com/@balajivis/whats-so-challenging-about-building-chatbots-drawing-lessons-from-the-trenches-1ca7343c6e3d', "web")
+   ```
+
+2. Run the script:
+   ```bash
+   python src/summarize.py
+   ```
